@@ -3,6 +3,7 @@ using Photon.Pun;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
+    // instance
     public static NetworkManager instance;
     void Awake()
     {
@@ -16,38 +17,36 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             DontDestroyOnLoad(gameObject);
         }
     }
-
     void Start()
     {
         PhotonNetwork.ConnectUsingSettings();
     }
-
+    
     // attempt to create a new room
     public void CreateRoom(string roomName)
     {
         PhotonNetwork.CreateRoom(roomName);
     }
-    
+
     // attempt to join an existing room
     public void JoinRoom(string roomName)
     {
         PhotonNetwork.JoinRoom(roomName);
     }
 
+    // changes the scene using Photon's system
     [PunRPC]
     public void ChangeScene(string sceneName)
     {
         PhotonNetwork.LoadLevel(sceneName);
     }
-
-
     public override void OnConnectedToMaster()
     {
+        Debug.Log("Connected to master server");
         CreateRoom("testroom");
     }
     public override void OnCreatedRoom()
     {
         Debug.Log("Created room: " + PhotonNetwork.CurrentRoom.Name);
     }
-    
 }
