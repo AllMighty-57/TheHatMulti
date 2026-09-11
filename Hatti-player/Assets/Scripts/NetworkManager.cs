@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 
@@ -10,9 +12,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         // if an instance already exists and it's not this one - destroy us
         if (instance != null && instance != this)
             gameObject.SetActive(false);
+        // otherwise, set the instance to this scipt
         else
         {
-            // set the instance
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
@@ -40,12 +42,5 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.LoadLevel(sceneName);
     }
-    /*public override void OnConnectedToMaster()
-    {
-        CreateRoom("testroom");
-    } */
-    public override void OnCreatedRoom()
-    {
-        Debug.Log("Created room: " + PhotonNetwork.CurrentRoom.Name);
-    }
+    
 }

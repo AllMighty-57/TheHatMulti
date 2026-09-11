@@ -1,22 +1,30 @@
-using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using Unity.Burst.Intrinsics;
+using UnityEngine;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
     [Header("Stats")]
+    [HideInInspector]
     public bool gameEnded = false;              // has the game ended?
-    public float timeToWin;                     // time a player needs to hold the hat to win
-    public float invincibleDuration;            // how long after a player gets the hat, are they invincible
-    private float hatPickupTime;                // the time the hat was picked up by the current holder
+    public float timeToWin;                     // time a player needs to hold the hat for in order to win
+    public float invincibleDuration;            // how long after a player gets the hat, are they invincible?
+    private float hatPickupTime;                // the time the hat was picked up by the current player
 
     [Header("Players")]
-    public string playerPrefabLocation;         // path in Resources folder to the Player prefab
-    public Transform[] spawnPoints;             // array of all available spawn points
-    public PlayerController[] players;          // array of all the players
-    public int playerWithHat;                   // id of the player with the hat
-    private int playersInGame;                  // number of players in the game
+    public string playerPrefabLocation; // player prefab path in the Resources folder
+    public Transform[] spawnPoints; // array of player spawn points
+
+    [HideInInspector]
+    public PlayerController[] players; // array of all players
+
+    [HideInInspector]
+    public int playerWithHat; // id of the player who currently has the hat
+    private int playersInGame; // number of players currently in the Game scene
 
     // instance
     public static GameManager instance;
@@ -41,6 +49,16 @@ public class GameManager : MonoBehaviourPunCallbacks
             SpawnPlayer();
     }
 
+    [PunRPC]
+    void WinGame(int playerId)
+    {
+        gameEnded = true;
+        PlayerController player = GetPlayer(playerId);
+        // set the UI to show who's won
+        Invoke("GoBackToMenu", 3.0f);
+        GameUI.instance.SetWinText(player.photonPlayer.NickName);
+    }
+
     // spawns a player and initializes it
     void SpawnPlayer()
     {
@@ -63,6 +81,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         return players.First(x => x.gameObject == playerObject);
     }
 
+
+
     // called when a player hits the hatted player - giving them the hat
     [PunRPC]
     public void GiveHat(int playerId, bool initialGive)
@@ -75,6 +95,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         GetPlayer(playerId).SetHat(true);
         hatPickupTime = Time.time;
     }
+
     // is the player able to take the hat at this current time?
     public bool CanGetHat()
     {
@@ -82,6 +103,12 @@ public class GameManager : MonoBehaviourPunCallbacks
             return true;
         else
             return false;
+    }
+
+    void GoBackToMenu()
+    {
+        PhotonNetwork.LeaveRoom();
+        NetworkManager.instance.ChangeScene("Menu");
     }
 
 }
