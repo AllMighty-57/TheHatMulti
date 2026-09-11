@@ -350,8 +350,8 @@ GameObject:
   - component: {fileID: 1480557032697313347}
   - component: {fileID: 3962144703336926090}
   - component: {fileID: 5485780583288681095}
-  - component: {fileID: 8245127173411593510}
   - component: {fileID: 917413043529349463}
+  - component: {fileID: 8245127173411593510}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -499,26 +499,11 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 917413043529349463}
   - {fileID: 8245127173411593510}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &8245127173411593510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8847855923595865680}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PhotonUnityNetworking::Photon.Pun.PhotonTransformView
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 0
-  m_SynchronizeScale: 0
-  m_UseLocal: 1
 --- !u!114 &917413043529349463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -537,6 +522,22 @@ MonoBehaviour:
   hatObject: {fileID: 9043720713572140521}
   curHatTime: 0
   rig: {fileID: 3962144703336926090}
+--- !u!114 &8245127173411593510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8847855923595865680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PhotonUnityNetworking::Photon.Pun.PhotonTransformView
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 0
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1 &9043720713572140521
 GameObject:
   m_ObjectHideFlags: 0

@@ -1628,7 +1628,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 10.34
+  orthographic size: 21.69
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2356,7 +2356,6 @@ MonoBehaviour:
     nameText: {fileID: 1883429858}
     hatTimeSlider: {fileID: 548210711}
   winText: {fileID: 732494142}
-  photonView: {fileID: 1839495651}
 --- !u!1 &1873686686
 GameObject:
   m_ObjectHideFlags: 0
