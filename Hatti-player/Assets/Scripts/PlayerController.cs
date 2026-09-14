@@ -14,6 +14,19 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public float jumpForce;
     public GameObject hatObject;
 
+    [Header("Appearance")]
+    public Renderer playerRenderer;
+
+    private readonly Color[] playerColors =
+    {
+        Color.red,
+        Color.blue,
+        Color.green,
+        Color.yellow,
+        Color.magenta,
+        Color.cyan
+    };
+
     [HideInInspector]
     public float curHatTime;
 
@@ -30,14 +43,23 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
         GameManager.instance.players[id - 1] = this;
 
+        // Assign this player a color based on their ActorNumber
+        SetPlayerColor();
+
         // give the first player the hat
         if (id == 1)
             GameManager.instance.GiveHat(id, true);
 
-        // if this isn't our local player, disable physics as that's
-        // controlled by the user and synced to all other clients
+        // if this isn't our local player, disable physics
         if (!photonView.IsMine)
             rig.isKinematic = true;
+    }
+
+    private void SetPlayerColor()
+    {
+        int colorIndex = (id - 1) % playerColors.Length;
+
+        playerRenderer.material.color = playerColors[colorIndex];
     }
 
 
