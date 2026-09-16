@@ -62,12 +62,12 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public PlayerController GetPlayer(int playerId)
     {
-        return players.First(x => x.id == playerId);
+        return players.First(x => x != null && x.id == playerId);
     }
 
     public PlayerController GetPlayer(GameObject playerObject)
     {
-        return players.First(x => x.gameObject == playerObject);
+        return players.First(x => x != null && x.gameObject == playerObject);
     }
 
     // called when the player hits the hatted player - giving them the hat
@@ -91,6 +91,39 @@ public class GameManager : MonoBehaviourPunCallbacks
             return true;
         else
             return false;
+    }
+
+    public void EliminatePlayer(int playerId)
+    {
+        if (!PhotonNetwork.IsMasterClient || gameEnded)
+            return;
+
+        PlayerController eliminatedPlayer = GetPlayer(playerId);
+
+        // Tell the player to destroy themselves
+        eliminatedPlayer.photonView.RPC(
+            "Eliminate",
+            eliminatedPlayer.photonPlayer
+        );
+
+        // Remove from the Master Client's player list
+        players[playerId - 1] = null;
+
+        int playersRemaining = players.Count(p => p != null);
+
+        // If only one player remains, they win
+        if (playersRemaining == 1)
+        {
+            gameEnded = true;
+
+            PlayerController winner = players.First(p => p != null);
+
+            photonView.RPC(
+                "WinGame",
+                RpcTarget.All,
+                winner.id
+            );
+        }
     }
 
     [PunRPC]

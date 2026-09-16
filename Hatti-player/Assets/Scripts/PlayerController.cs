@@ -27,6 +27,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         Color.cyan
     };
 
+    [Header("Effects")]
+    public string explosionPrefabLocation = "Explosion";
+
     [HideInInspector]
     public float curHatTime;
 
@@ -79,15 +82,34 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
 
-        // if I'm the game host, check to see if this player has won
+        // The Master Client checks if this player has reached the time limit
         if (PhotonNetwork.IsMasterClient)
         {
-            if (curHatTime >= GameManager.instance.timeToWin && !GameManager.instance.gameEnded)
+            if (curHatTime >= GameManager.instance.timeToWin &&
+                !GameManager.instance.gameEnded)
             {
-                GameManager.instance.gameEnded = true;
-                GameManager.instance.photonView.RPC("WinGame", RpcTarget.All, id);
+                GameManager.instance.EliminatePlayer(id);
             }
         }
+    }
+
+    [PunRPC]
+    public void Eliminate()
+    {
+        if (!photonView.IsMine)
+            return;
+
+        // Remember where the player was
+        Vector3 explosionPosition = transform.position;
+
+        // Spawn the explosion across the network
+        PhotonNetwork.Instantiate(
+            explosionPrefabLocation,
+            explosionPosition,
+            Quaternion.identity
+        );
+
+        PhotonNetwork.Destroy(gameObject);
     }
 
     void Move()
