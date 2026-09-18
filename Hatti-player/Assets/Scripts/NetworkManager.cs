@@ -10,15 +10,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        // if an instance already exists and it's not this one - destroy us
+        // If another NetworkManager already exists, destroy this one.
         if (instance != null && instance != this)
-            gameObject.SetActive(false);
-        else
         {
-            // set the instance
-            instance = this;
-            DontDestroyOnLoad(gameObject);
+            Destroy(gameObject);
+            return;
         }
+
+        // Set the instance
+        instance = this;
+
+        // Keep the NetworkManager alive between scenes
+        DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
@@ -36,8 +39,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinRoom(roomName);
     }
 
-    // changes the scene using Photon's system
-    // this is an RPC because when the host starts the game, 
+    // Changes the scene using Photon's system
+    // This is an RPC because when the host starts the game,
     // they will tell everyone else in the room to call this function
     [PunRPC]
     public void ChangeScene(string sceneName)
@@ -55,5 +58,4 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("Created room: " + PhotonNetwork.CurrentRoom.Name);
     }
-
 }

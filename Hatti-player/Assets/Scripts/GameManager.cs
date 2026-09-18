@@ -18,7 +18,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Transform[] spawnPoints;     // array of all available spawn points
     public PlayerController[] players;  // array of all the players
     public int playerWithHat;           // id of the player with the hat
-    private int playersInGame;          // number of players in the game
+    private int playersInGame;          // number of players in the game 
+
+    [Header("Effects")]
+    public string explosionPrefabLocation;
 
     // instance
     public static GameManager instance;
@@ -92,6 +95,18 @@ public class GameManager : MonoBehaviourPunCallbacks
         else
             return false;
     }
+    
+    [PunRPC]
+    public void PlayExplosion(Vector3 position)
+    {
+        GameObject explosion = Instantiate(
+            Resources.Load<GameObject>(explosionPrefabLocation),
+            position,
+            Quaternion.identity
+        );
+
+        Destroy(explosion, 0.6f);
+    }
 
     public void EliminatePlayer(int playerId)
     {
@@ -99,6 +114,16 @@ public class GameManager : MonoBehaviourPunCallbacks
             return;
 
         PlayerController eliminatedPlayer = GetPlayer(playerId);
+
+        // Save the player's position BEFORE destroying them
+        Vector3 explosionPosition = eliminatedPlayer.transform.position;
+
+        // Tell everyone to spawn the explosion
+        photonView.RPC(
+            "PlayExplosion",
+            RpcTarget.All,
+            explosionPosition
+        );
 
         // Tell the player to destroy themselves
         eliminatedPlayer.photonView.RPC(
@@ -125,6 +150,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             );
         }
     }
+
+    
 
     [PunRPC]
     void WinGame(int playerId)

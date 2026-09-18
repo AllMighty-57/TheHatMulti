@@ -27,8 +27,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         Color.cyan
     };
 
-    [Header("Effects")]
-    public string explosionPrefabLocation = "Explosion";
 
     [HideInInspector]
     public float curHatTime;
@@ -45,7 +43,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         id = player.ActorNumber;
 
         GameManager.instance.players[id - 1] = this;
-
+         
         // Assign this player a color based on their ActorNumber
         SetPlayerColor();
 
@@ -99,15 +97,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         if (!photonView.IsMine)
             return;
 
-        // Remember where the player was
-        Vector3 explosionPosition = transform.position;
-
-        // Spawn the explosion across the network
-        PhotonNetwork.Instantiate(
-            explosionPrefabLocation,
-            explosionPosition,
-            Quaternion.identity
-        );
 
         PhotonNetwork.Destroy(gameObject);
     }

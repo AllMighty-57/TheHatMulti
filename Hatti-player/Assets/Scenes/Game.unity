@@ -2308,6 +2308,7 @@ MonoBehaviour:
   - {fileID: 1953423161}
   players: []
   playerWithHat: 0
+  explosionPrefabLocation: Explosion
 --- !u!114 &1839495651
 MonoBehaviour:
   m_ObjectHideFlags: 0
