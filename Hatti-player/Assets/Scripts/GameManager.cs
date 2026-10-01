@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public PlayerController GetPlayer(int playerId)
     {
-        return players.First(x => x != null && x.id == playerId);
+        return players.FirstOrDefault(x => x != null && x.id == playerId);
     }
 
     public PlayerController GetPlayer(GameObject playerObject)
@@ -77,13 +77,36 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void GiveHat(int playerId, bool initialGive)
     {
-        // remove the hat from the currently hatted player
+        // Remove the hat from the previous holder if they still exist.
         if (!initialGive)
-            GetPlayer(playerWithHat).SetHat(false);
+        {
+            PlayerController previousHolder = null;
 
-        // give the hat to the new player
+            // Only try to find the previous holder if their ID is valid.
+            if (playerWithHat > 0 && playerWithHat <= players.Length)
+            {
+                previousHolder = players[playerWithHat - 1];
+            }
+
+            if (previousHolder != null)
+            {
+                previousHolder.SetHat(false);
+            }
+        }
+
+        // Update who currently has the hat.
         playerWithHat = playerId;
-        GetPlayer(playerId).SetHat(true);
+
+        // Find the new holder.
+        PlayerController newHolder = GetPlayer(playerId);
+
+        if (newHolder != null)
+        {
+            // Give them the hat.
+            newHolder.SetHat(true);
+        }
+
+        // Prevent immediate transfer.
         hatPickupTime = Time.time;
     }
 
@@ -114,6 +137,9 @@ public class GameManager : MonoBehaviourPunCallbacks
             return;
 
         PlayerController eliminatedPlayer = GetPlayer(playerId);
+
+        if (eliminatedPlayer == null)
+            return;
 
         // Save the player's position BEFORE destroying them
         Vector3 explosionPosition = eliminatedPlayer.transform.position;
@@ -149,9 +175,42 @@ public class GameManager : MonoBehaviourPunCallbacks
                 winner.id
             );
         }
+
+        // More than one player remains -> find the next player
+        if (playersRemaining > 1)
+        {
+            PlayerController nextPlayer = GetNextPlayer(playerId);
+
+            if (nextPlayer != null)
+            {
+                photonView.RPC(
+                    "GiveHat",
+                    RpcTarget.All,
+                    nextPlayer.id,
+                    false
+                );
+            }
+        }
     }
 
-    
+    private PlayerController GetNextPlayer(int eliminatedPlayerId)
+    {
+        // Start searching with the player immediately after
+        // the eliminated player's ID.
+        for (int offset = 1; offset <= players.Length; offset++)
+        {
+            int nextId = ((eliminatedPlayerId - 1 + offset) % players.Length) + 1;
+
+            PlayerController candidate = players[nextId - 1];
+
+            if (candidate != null)
+                return candidate;
+        }
+
+        return null;
+    }
+
+
 
     [PunRPC]
     void WinGame(int playerId)
