@@ -8,19 +8,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     // instance
     public static NetworkManager instance;
 
-    private void Awake()
+    void Awake()
     {
-        // If another NetworkManager already exists, destroy this one.
-        if (instance != null && instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        // Set the instance
         instance = this;
-
-        // Keep the NetworkManager alive between scenes
         DontDestroyOnLoad(gameObject);
     }
 
